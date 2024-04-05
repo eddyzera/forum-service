@@ -11,13 +11,13 @@ export class InMemoryQuestionCommentRepository
   }
 
   async findById(id: string): Promise<QuestionComment | null> {
-    const question = this.items.find((item) => item.id.toString() === id)
+    const questionComment = this.items.find((item) => item.id.toString() === id)
 
-    if (!question) {
+    if (!questionComment) {
       return null
     }
 
-    return question
+    return questionComment
   }
 
   async delete(questionComment: QuestionComment): Promise<void> {
