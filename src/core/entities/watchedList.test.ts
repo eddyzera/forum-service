@@ -17,9 +17,10 @@ describe('WatchedList', () => {
   it('should be able to add new items to the list', () => {
     const list = new NumberWatchedList([1, 2, 3])
     list.add(4)
+    list.add(5)
 
-    expect(list.currentItems).toHaveLength(4)
-    expect(list.getNewItems()).toEqual([4])
+    expect(list.currentItems).toHaveLength(5)
+    expect(list.getNewItems()).toEqual([4, 5])
   })
 
   it('should be able to remove items from the list', () => {
