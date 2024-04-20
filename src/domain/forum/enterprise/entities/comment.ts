@@ -1,5 +1,5 @@
-import { Entity } from './entity'
-import { UniqueEntityId } from './uniqueEntityId'
+import { Entity } from '../../../../core/entities/entity'
+import { UniqueEntityId } from '../../../../core/entities/uniqueEntityId'
 
 export interface CommentProps {
   authorId: UniqueEntityId

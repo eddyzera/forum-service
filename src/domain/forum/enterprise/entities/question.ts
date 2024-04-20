@@ -1,12 +1,14 @@
 import { Slug } from './valueObject/slug'
 import dayjs from 'dayjs'
-import { Entity } from '../../../../core/entities/entity'
 import { UniqueEntityId } from '../../../../core/entities/uniqueEntityId'
 import { Optional } from '../../../../core/types/optional'
+import { AggregateRoot } from '../../../../core/entities/aggregateRoot'
+import { QuestionAttachment } from './questionAttachment'
 
 export interface QuestionProps {
   authorId: UniqueEntityId
   bestAnswerId?: UniqueEntityId
+  attachments: QuestionAttachment[]
   title: string
   content: string
   slug: Slug
@@ -14,18 +16,13 @@ export interface QuestionProps {
   updateAt?: Date
 }
 
-export class Question extends Entity<QuestionProps> {
+export class Question extends AggregateRoot<QuestionProps> {
   private touch() {
     this.props.updateAt = new Date()
   }
 
   get content() {
     return this.props.content
-  }
-
-  set content(content: string) {
-    this.props.content = content
-    this.touch()
   }
 
   get title() {
@@ -50,11 +47,6 @@ export class Question extends Entity<QuestionProps> {
     return this.props.slug
   }
 
-  set bestAnswerId(bestAnswerId: UniqueEntityId | undefined) {
-    this.props.bestAnswerId = bestAnswerId
-    this.touch()
-  }
-
   get createdAt() {
     return this.props.createdAt
   }
@@ -71,14 +63,33 @@ export class Question extends Entity<QuestionProps> {
     return this.content.substring(0, 120).trim().concat('...')
   }
 
+  get attachments() {
+    return this.props.attachments
+  }
+
+  set content(content: string) {
+    this.props.content = content
+    this.touch()
+  }
+
+  set bestAnswerId(bestAnswerId: UniqueEntityId | undefined) {
+    this.props.bestAnswerId = bestAnswerId
+    this.touch()
+  }
+
+  set attachments(attachments: QuestionAttachment[]) {
+    this.props.attachments = attachments
+  }
+
   static create(
-    props: Optional<QuestionProps, 'createdAt' | 'slug'>,
+    props: Optional<QuestionProps, 'createdAt' | 'slug' | 'attachments'>,
     id?: UniqueEntityId,
   ) {
     const question = new Question(
       {
         ...props,
         slug: props.slug ?? Slug.createFromText(props.title),
+        attachments: props.attachments ?? [],
         createdAt: props.createdAt ?? new Date(),
       },
       id,

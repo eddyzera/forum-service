@@ -4,6 +4,7 @@ import { InMemoryQuestionRepository } from '../../../../../test/repository/inMem
 
 import { makeQuestion } from '../../../../../test/factories/makeQuestion'
 import { UniqueEntityId } from '../../../../core/entities/uniqueEntityId'
+import { NotAllowedError } from './errors/notAllowedError'
 
 // sut -> system under test
 let inMemoryQuestionRepository: InMemoryQuestionRepository
@@ -40,11 +41,12 @@ describe('DeleteQuestion', () => {
     )
     inMemoryQuestionRepository.create(newQuestion)
 
-    await expect(() =>
-      sut.execute({
-        questionId: 'question-01',
-        authorId: 'author-02 ',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionId: 'question-01',
+      authorId: 'author-02 ',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

@@ -1,7 +1,9 @@
+import { Either, left, right } from '../../../../core/either'
 import { UniqueEntityId } from '../../../../core/entities/uniqueEntityId'
 import { AnswerComment } from '../../enterprise/entities/answerComment'
 import { AnswerCommentRepository } from '../repository/answerCommentRepository'
 import { AnswersRepository } from '../repository/answersRepository'
+import { NotAllowedError } from './errors/notAllowedError'
 
 export interface CommentOnAnswerUseCaseRequest {
   authorId: string
@@ -9,9 +11,12 @@ export interface CommentOnAnswerUseCaseRequest {
   content: string
 }
 
-export interface CommentOnAnswerUseCaseResponse {
-  answerComment: AnswerComment
-}
+export type CommentOnAnswerUseCaseResponse = Either<
+  NotAllowedError,
+  {
+    answerComment: AnswerComment
+  }
+>
 
 export class CommentOnAnswerUseCase {
   constructor(
@@ -27,7 +32,7 @@ export class CommentOnAnswerUseCase {
     const answer = await this.answerRepository.findById(answerId)
 
     if (!answer) {
-      throw new Error('Answer not found')
+      return left(new NotAllowedError())
     }
 
     const answerComment = AnswerComment.create({
@@ -38,8 +43,8 @@ export class CommentOnAnswerUseCase {
 
     await this.answerCommentsRepository.create(answerComment)
 
-    return {
+    return right({
       answerComment,
-    }
+    })
   }
 }

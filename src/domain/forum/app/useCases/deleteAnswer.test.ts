@@ -4,6 +4,7 @@ import { InMemoryAnswerRepository } from '../../../../../test/repository/inMemor
 
 import { makeAnswer } from '../../../../../test/factories/makeAnswer'
 import { UniqueEntityId } from '../../../../core/entities/uniqueEntityId'
+import { NotAllowedError } from './errors/notAllowedError'
 
 let inMemoryAnswerRepository: InMemoryAnswerRepository
 let sut: DeleteAnswerUseCase
@@ -39,11 +40,12 @@ describe('DeleteAnswer', () => {
     )
     inMemoryAnswerRepository.create(newQuestion)
 
-    await expect(() =>
-      sut.execute({
-        questionId: 'question-01',
-        authorId: 'author-02 ',
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      questionId: 'question-01',
+      authorId: 'author-02 ',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })
